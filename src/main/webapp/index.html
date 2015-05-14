@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Chat</title>
+    <link rel="stylesheet" href="resources/css/style.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script type="text/javascript" src="resources/js/scripts.js"></script>
+</head>
+
+<body >
+<div id="page">
+    <p class="forTitle">A simple Chat</p>
+    <div id="navigation">
+        <div id="user"> <img src="resources/images/User.png" width="45px" title="Click to LogIn">
+            <ul class="dropdown">
+                <li><button class="buttons" id="LOGIN">LogIn</button></li>
+                <li><button class="buttons" id="LOGOUT">LogOut</button></li>
+            </ul>
+        </div>
+        <div id="deletion"> <img src="resources/images/delete.png" width="35px" title="Delete chosen messages"></div>
+        <div id="history"><img src="resources/images/history.png" width="45px" title="View history of messages"></div>
+        <div id="serverOn"> <img src="resources/images/server.png" width="40px" title="Server is on"></div>
+        <div id="serverOff"> <img src="resources/images/serverOff.png" width="40px" title="Server is off"></div>
+    </div>
+    <p class="login">Please, input your name</p>
+    <input type="text" class="name" name="input-name" placeholder=""/>
+    <button class="buttons" id="loginConfirm">OK</button>
+    <div id="page1"></div>
+    <div id="pageForWholeHistory"></div>
+    <p id="mes">Please, type your message below.</p>
+    <textarea id="comment" cols="40" rows="10" value="отправить"></textarea>
+    <button class="buttons" id="submit">Send</button>
+    <button class="buttons" id="backToChat">Back</button>
+</div>
+</body>
+
+</html>
