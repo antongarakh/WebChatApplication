@@ -3,6 +3,7 @@ package bsu.famcs.chat.storage.xml;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import bsu.famcs.chat.model.Message;
@@ -16,6 +17,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.xpath.*;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,11 +71,11 @@ public final class XMLHistoryUtil {
         messageElement.appendChild(userNameElement);
 
         Element msgTextElement = document.createElement(TEXT);
-        msgTextElement.appendChild(document.createTextNode(message.getMsgText()));
+        msgTextElement.appendChild(document.createTextNode(message.getMessageText()));
         messageElement.appendChild(msgTextElement);
 
         Element sendDateElement = document.createElement(DATE);
-        sendDateElement.appendChild(document.createTextNode(message.getSendDate()));
+        sendDateElement.appendChild(document.createTextNode(message.getDate()));
         messageElement.appendChild(sendDateElement);
 
 
@@ -100,6 +103,48 @@ public final class XMLHistoryUtil {
              messages.add(new Message(id, userName, msgText, sendDate/*, changeDate, isDeleted*/));
         }
         return messages;
+    }
+
+    public static synchronized void updateData(Message message) throws ParserConfigurationException, SAXException, IOException, TransformerException, XPathExpressionException {
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        Document document = documentBuilder.parse(XML_LOCATION);
+        document.getDocumentElement().normalize();
+        Node messageToUpdate = getNodeById(document, message.getId());
+
+        if (messageToUpdate != null) {
+
+            NodeList childNodes = messageToUpdate.getChildNodes();
+
+            for (int i = 0; i < childNodes.getLength(); i++) {
+
+                Node node = childNodes.item(i);
+
+                if (TEXT.equals(node.getNodeName())) {
+                    node.setTextContent(message.getMessageText());
+                }
+
+
+
+                if (DATE.equals(node.getNodeName())) {
+                    node.setTextContent(message.getDate());
+                }
+
+            }
+            Transformer transformer = getTransformer();
+
+            DOMSource source = new DOMSource(document);
+            StreamResult result = new StreamResult(new File(XML_LOCATION));
+            transformer.transform(source, result);
+        } else {
+            throw new NullPointerException();
+        }
+    }
+
+    private static Node getNodeById(Document doc, String id) throws XPathExpressionException {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        XPathExpression expr = xpath.compile("//" + MESSAGE + "[@id='" + id + "']");
+        return (Node) expr.evaluate(doc, XPathConstants.NODE);
     }
 
     private static Transformer getTransformer() throws TransformerConfigurationException {

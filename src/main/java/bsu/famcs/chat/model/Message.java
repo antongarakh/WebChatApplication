@@ -26,14 +26,24 @@ public class Message {
         return name;
     }
 
-    public String getMsgText() {
+    public String getMessageText() {
         return message;
     }
 
-    public String getSendDate() {
+    public String getDate() {
         return date;
     }
 
+    public void setDate(String date)
+    {
+        this.date = date;
+    }
+
+    public void setMessage(String message)
+    {
+
+        this.message = message;
+    }
 
     @Override
     public String toString() {
@@ -46,11 +56,11 @@ public class Message {
     }
 
     public String getUserMessage() {
-        StringBuilder sb = new StringBuilder(getSendDate());
+        StringBuilder sb = new StringBuilder(getDate());
         sb.append(' ')
                 .append(name)
                 .append(" : ")
-                .append(getMsgText());
+                .append(getMessageText());
         return sb.toString();
     }
 }

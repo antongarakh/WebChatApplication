@@ -3,6 +3,7 @@ package bsu.famcs.chat.controller;
 import bsu.famcs.chat.model.Message;
 import bsu.famcs.chat.model.MessageStorage;
 import bsu.famcs.chat.storage.xml.XMLHistoryUtil;
+import bsu.famcs.chat.util.ServletUtil;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -15,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -72,6 +72,32 @@ public class MessageServlet extends HttpServlet {
         } catch (ParseException | ParserConfigurationException | SAXException | TransformerException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             logger.error("Invalid message");
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        logger.info("doDelete");
+        String data = ServletUtil.getMessageBody(request);
+        logger.info("data: " + data);
+        try {
+            JSONObject json = stringToJson(data);
+            String id = json.get(ID).toString();
+            Message newMessage = MessageStorage.getMessageById(id);
+            if (newMessage != null) {
+                newMessage.setDate(generateCurrentDate());
+                newMessage.setMessage("");
+                XMLHistoryUtil.updateData(newMessage);
+
+                logger.info("response status: " + 200);
+                response.setStatus(HttpServletResponse.SC_OK);
+            } else {
+                logger.error("bad request");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Task does not exist");
+            }
+        } catch (Exception e) {
+            logger.error("bad request");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 

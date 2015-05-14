@@ -18,7 +18,7 @@ public final class MessageUtil {
     private static final String EN = "EN";
     private static final String NAME = "name";
     private static final String MESSAGE = "message";
-    private static final String ID = "id";
+    public static final String ID = "id";
 
 
     private MessageUtil() {
@@ -29,11 +29,16 @@ public final class MessageUtil {
         return TN + number + EN;
     }
 
+    public static String getId()
+    {
+        return ID;
+    }
+
     public static int getIndex(String token) {
         return (Integer.valueOf(token.substring(2, token.length() - 2)) - 11) / 8;
     }
 
-    private static String generateCurrentDate() {
+    public static String generateCurrentDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy, HH:mm:ss");
          return dateFormat.format(new Date());
     }
