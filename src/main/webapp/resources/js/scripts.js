@@ -67,6 +67,8 @@ $(document).ready(function() {
 
     $('#LOGOUT').click(function() {
         if (ifLogin == true) {
+            isRestored=false;
+            userName = "";
             $('#page1').hide();
             $('#pageForWholeHistory').hide();
             $('#comment').hide();
@@ -75,6 +77,7 @@ $(document).ready(function() {
             $('#mes').hide();
             $('#loginConfirm').hide();
             $('#page1').empty();
+            restore();
             ifLogin = false;
         }
     });

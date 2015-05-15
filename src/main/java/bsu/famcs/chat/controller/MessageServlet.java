@@ -88,7 +88,31 @@ public class MessageServlet extends HttpServlet {
                 newMessage.setDate(generateCurrentDate());
                 newMessage.setMessage("");
                 XMLHistoryUtil.updateData(newMessage);
+                logger.info("response status: " + 200);
+                response.setStatus(HttpServletResponse.SC_OK);
+            } else {
+                logger.error("bad request");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Task does not exist");
+            }
+        } catch (Exception e) {
+            logger.error("bad request");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
 
+    @Override
+    protected void doPut (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        logger.info("doPut");
+        String data = ServletUtil.getMessageBody(request);
+        logger.info("data: " + data);
+        try {
+            JSONObject json = stringToJson(data);
+            String id = json.get(ID).toString();
+            Message newMessage = MessageStorage.getMessageById(id);
+            if (newMessage != null) {
+                newMessage.setDate(generateCurrentDate());
+                newMessage.setMessage(json.get(MESSAGE).toString());
+                XMLHistoryUtil.updateData(newMessage);
                 logger.info("response status: " + 200);
                 response.setStatus(HttpServletResponse.SC_OK);
             } else {

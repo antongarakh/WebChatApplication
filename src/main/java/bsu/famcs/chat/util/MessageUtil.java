@@ -17,7 +17,7 @@ public final class MessageUtil {
     private static final String TN = "TN";
     private static final String EN = "EN";
     private static final String NAME = "name";
-    private static final String MESSAGE = "message";
+    public  static final String MESSAGE = "message";
     public static final String ID = "id";
 
 
