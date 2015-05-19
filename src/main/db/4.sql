@@ -1,3 +1,3 @@
- SELECT * FROM users
- WHERE (select(text) FROM messages
-WHERE user_id = (SELECT id FROM users))>1 ;
+SELECT * FROM messages
+WHERE user_id = (SELECT id FROM users WHERE name = 'anton') 
+AND  text LIKE '%hello%';
