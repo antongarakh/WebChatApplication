@@ -18,6 +18,14 @@ public final class MessageStorage {
         HISTORY.add(message);
     }
 
+    public static void updateMessage(Message message) {
+        for(int i=0; i < HISTORY.size(); i++){
+            if(HISTORY.get(i).getId().equals(message.getId())){
+                HISTORY.get(i).setMessage(message.getMessageText());
+            }
+        }
+    }
+
     public static void addAll(List<Message> messages) {
         HISTORY.addAll(messages);
     }

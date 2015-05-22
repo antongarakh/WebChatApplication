@@ -2,7 +2,7 @@ package bsu.famcs.chat.model;
 
 
 public class Message {
-    private final String id;
+    private String id;
     private String name;
     private String message;
     private String date;

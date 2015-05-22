@@ -1,5 +1,6 @@
 package bsu.famcs.chat.controller;
 
+
 import bsu.famcs.chat.model.Message;
 import bsu.famcs.chat.model.MessageStorage;
 import bsu.famcs.chat.storage.xml.XMLHistoryUtil;
@@ -22,12 +23,13 @@ import java.io.PrintWriter;
 import static bsu.famcs.chat.util.MessageUtil.*;
 import static bsu.famcs.chat.util.ServletUtil.APPLICATION_JSON;
 import static bsu.famcs.chat.util.ServletUtil.getMessageBody;
-
+import bsu.famcs.chat.dao.MessageDaoImpl;
 @WebServlet("/chat")
 public class MessageServlet extends HttpServlet {
+    private boolean isStored = false;
     private static final long serialVersionUID = 1L;
     private static Logger logger = Logger.getLogger(MessageServlet.class.getName());
-
+    MessageDaoImpl messageDao = new MessageDaoImpl();
     @Override
     public void init() throws ServletException {
         try {
@@ -36,6 +38,7 @@ public class MessageServlet extends HttpServlet {
             logger.error(e);
         }
     }
+
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -65,11 +68,12 @@ public class MessageServlet extends HttpServlet {
             JSONObject json = stringToJson(data);
             Message message = jsonToMessage(json);
             logger.info(message.getUserMessage());
-            XMLHistoryUtil.addMessage(message);
+           // XMLHistoryUtil.addMessage(message);
+            messageDao.add(message);
             MessageStorage.addMessage(message);
             System.out.println(MessageStorage.getSize());
             response.setStatus(HttpServletResponse.SC_OK);
-        } catch (ParseException | ParserConfigurationException | SAXException | TransformerException e) {
+        } catch (ParseException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             logger.error("Invalid message");
         }
@@ -87,7 +91,9 @@ public class MessageServlet extends HttpServlet {
             if (newMessage != null) {
                 newMessage.setDate(generateCurrentDate());
                 newMessage.setMessage("");
-                XMLHistoryUtil.updateData(newMessage);
+                messageDao.update(newMessage);
+                MessageStorage.updateMessage(newMessage);
+                //XMLHistoryUtil.updateData(newMessage);
                 logger.info("response status: " + 200);
                 response.setStatus(HttpServletResponse.SC_OK);
             } else {
@@ -112,7 +118,9 @@ public class MessageServlet extends HttpServlet {
             if (newMessage != null) {
                 newMessage.setDate(generateCurrentDate());
                 newMessage.setMessage(json.get(MESSAGE).toString());
-                XMLHistoryUtil.updateData(newMessage);
+                messageDao.update(newMessage);
+                MessageStorage.updateMessage(newMessage);
+               // XMLHistoryUtil.updateData(newMessage);
                 logger.info("response status: " + 200);
                 response.setStatus(HttpServletResponse.SC_OK);
             } else {
@@ -127,6 +135,11 @@ public class MessageServlet extends HttpServlet {
 
     @SuppressWarnings("unchecked")
     private String serverResponse(int index) {
+        if(isStored==false)
+        {
+            isStored=true;
+            MessageStorage.addAll(messageDao.selectAll());
+        }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(MESSAGES, MessageStorage.getSubHistory(index));
         jsonObject.put(TOKEN, getToken(MessageStorage.getSize()));
@@ -135,14 +148,9 @@ public class MessageServlet extends HttpServlet {
 
 
     private void loadHistory() throws TransformerException, ParserConfigurationException, IOException,
-            SAXException {
-        if (!XMLHistoryUtil.isStorageExist()) {
-            XMLHistoryUtil.createStorage();
-            logger.info(MessageStorage.getSubHistory(0));
-        } else {
-            MessageStorage.addAll(XMLHistoryUtil.getMessages());
-            logger.info('\n' + MessageStorage.getStringView());
-            logger.info(MessageStorage.getSubHistory(0));
-        }
+            SAXException{
+        MessageStorage.addAll(messageDao.selectAll());
+        logger.info('\n' + MessageStorage.getStringView());
+        logger.info(MessageStorage.getSubHistory(0));
     }
 }
